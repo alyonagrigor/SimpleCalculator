@@ -507,11 +507,11 @@ public class ButtonFragment extends Fragment {
     }
 
     public void showToastFirstDigit() {
-        Toast.makeText(getActivity(), "Введите хотя бы одно число", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.enter_first_number, Toast.LENGTH_SHORT).show();
     }
 
     public void showToastNextDigit() {
-        Toast.makeText(getActivity(), "Введите следующее число", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.enter_next_number, Toast.LENGTH_SHORT).show();
     }
 
     /* Сохранение состояния */

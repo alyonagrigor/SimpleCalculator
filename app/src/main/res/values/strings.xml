@@ -21,4 +21,6 @@
     <string name="bs">BS</string>
     <string name="clear">C</string>
     <string name="error">Error</string>
+    <string name="enter_first_number">Введите хотя бы одно число</string>
+    <string name="enter_next_number">Введите следующее число</string>
 </resources>
