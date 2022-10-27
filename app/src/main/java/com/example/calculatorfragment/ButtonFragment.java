@@ -308,7 +308,7 @@ public class ButtonFragment extends Fragment {
                 break;
 
             case ('-'):
-                num1 = num1 - num2;
+                num1 -= num2;
                 break;
 
             case ('*'):
@@ -316,8 +316,8 @@ public class ButtonFragment extends Fragment {
                 break;
 
             case ('/'):
-                 num1 = num1 / num2;
-                 break;
+                num1 /= num2;
+                break;
         }
 
         cutZeroOutput(num1);
