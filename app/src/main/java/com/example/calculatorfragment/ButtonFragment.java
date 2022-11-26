@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -135,20 +136,20 @@ public class ButtonFragment extends Fragment {
 
     private FragmentButtonBinding binding;
     private OnFragmentSendDataListener fragmentSendDataListener;
-    StringBuilder sbHistory = new StringBuilder("");
+    StringBuilder sbHistory = new StringBuilder();
     String sHistory, sInput = "";
     char operator = '0';
     double num1, num2 = 0;
     boolean hasNum1, isLastPressedOperation, isBSAvailable = false;
 
     /* константы для сохранения состояния */
-    final static String sHistoryKey= "sHistoryKey";
-    final static String operatorKey= "operatorKey";
-    final static String sInputKey= "sInputKey";
-    final static String num1Key= "num1Key";
-    final static String num2Key= "num2Key";
-    final static String hasNum1Key= "hasNum1Key";
-    final static String isLastPressedOperationKey= "isLastPressedOperationKey";
+    final static String sHistoryKey = "sHistoryKey";
+    final static String operatorKey = "operatorKey";
+    final static String sInputKey = "sInputKey";
+    final static String num1Key = "num1Key";
+    final static String num2Key = "num2Key";
+    final static String hasNum1Key = "hasNum1Key";
+    final static String isLastPressedOperationKey = "isLastPressedOperationKey";
     final static String isBSAvailableKey = "isBSAvailableKey";
 
 
@@ -158,9 +159,9 @@ public class ButtonFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
 
         binding = FragmentButtonBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -181,7 +182,7 @@ public class ButtonFragment extends Fragment {
         return view;
     }
 
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         binding.etInput.setText(sInput); //выводим пустые строки
@@ -326,7 +327,7 @@ public class ButtonFragment extends Fragment {
     }
 
     //метод, вызываемый при нажатии кнопки с цифрой
-    public void enterDigit (int n){
+    public void enterDigit(int n) {
         //если первая введенная цифра в числе 0, то убираем его
         if (sInput.equals("0") && !sbHistory.toString().equals("")) {
             sInput = "";
@@ -416,40 +417,46 @@ public class ButtonFragment extends Fragment {
     }
 
     public void bSOperation() {
-        if (isBSAvailable && sInput.length() > 3 //в строке могут быть пробел и
-                // минус, поэтому безопасно стирать можно если больше 3 символов
-                || isBSAvailable && sInput.length() == 2) {
-            //или если в строке осталось 2 символа, то есть 2 цифры без минуса
-            sInput = sInput.substring(0, sInput.length() - 1);
-            sbHistory.deleteCharAt(sbHistory.length() - 1);
-        } else if (isBSAvailable && sInput.length() == 3 && sInput.charAt(1) != '-') {
-            //если в строке 3 символа и второй - не минус, то можно стирать последний
-            //символ безопасно
-            sInput = sInput.substring(0, 2);
-            sbHistory.deleteCharAt(sbHistory.length() - 1);
-        } else if (isBSAvailable && sInput.length() == 3 && sInput.charAt(1) == '-') {
-            //если в строке 3 символа и второй - минус, то можно стирать все 3 символа:
-            //цифру, минус, пробел
-            sInput = "0";
-            sbHistory.delete(sbHistory.length() - 3, sbHistory.length());
-            isBSAvailable = false;
-        } else if (isBSAvailable && sInput.length() == 1) {
-            //если в строке осталась только 1 цифра, заменяем ее на ноль
-            sInput = "0";
-            sbHistory.deleteCharAt(sbHistory.length() - 1);
-            isBSAvailable = false;
+        if (isBSAvailable) {
+            int length = sInput.length();
+
+            /*в строке могут быть пробел и минус, поэтому безопасно стирать можно если больше
+            3 символов или если в строке осталось 2 символа, то есть 2 цифры без минуса */
+            if (length > 3 || length == 2){
+                sInput = sInput.substring(0, sInput.length() - 1);
+                sbHistory.deleteCharAt(sbHistory.length() - 1);
+
+            } else if (length == 3 && findSecondChar() != '-') {
+                //если в строке 3 символа и второй - не минус, то можно стирать последний
+                //символ безопасно
+                sInput = sInput.substring(0, 2);
+                sbHistory.deleteCharAt(sbHistory.length() - 1);
+
+            } else if (length == 3 && findSecondChar() == '-') {
+                //если в строке 3 символа и второй - минус, то можно стирать все 3 символа:
+                //цифру, минус, пробел
+                sInput = "0";
+                sbHistory.delete(sbHistory.length() - 3, sbHistory.length());
+                isBSAvailable = false;
+
+            } else if (length == 1) {
+                //если в строке осталась только 1 цифра, заменяем ее на ноль
+                sInput = "0";
+                sbHistory.deleteCharAt(sbHistory.length() - 1);
+                isBSAvailable = false;
+            }
+            binding.etInput.setText(sInput);
+            fragmentSendDataListener.onSendData(sbHistory);
         }
-        binding.etInput.setText(sInput);
-        fragmentSendDataListener.onSendData(sbHistory);
     }
 
     public void percentOperation() {
 
-        if (!hasNum1 && sInput.equals("")){
+        if (!hasNum1 && sInput.equals("")) {
             showToastFirstDigit(); // если не введено ни одно число и не нажата ни одна
             // арифметическая операция
 
-        } else if (!hasNum1){ //если введено только 1 число, а кнопка арифметической операции
+        } else if (!hasNum1) { //если введено только 1 число, а кнопка арифметической операции
             // не нажата, то рассчитать 1 процент
             num1 = Double.parseDouble(sInput);
             sbHistory.append("\u200b * 1% \u200b"); //записываем первое число в
@@ -467,7 +474,7 @@ public class ButtonFragment extends Fragment {
             //если есть num1 и оператор, но правого операнда нет - то выводим подсказку
             showToastNextDigit();
 
-        } else if (!sInput.equals("") && operator!='0' && !isLastPressedOperation) {
+        } else if (!sInput.equals("") && operator != '0' && !isLastPressedOperation) {
             //заданы 2 операнда и арифметическая операция в operator - рассчитываем
             // num2 процентов от num1
             num2 = Double.parseDouble(sInput);
@@ -487,8 +494,8 @@ public class ButtonFragment extends Fragment {
 
     /* Вспомогательные методы */
 
-    public void cutZeroOutput (double d){
-        String sD= String.valueOf(d); // обрезаем .0 при выводе в input
+    public void cutZeroOutput(double d) {
+        String sD = String.valueOf(d); // обрезаем .0 при выводе в input
         if (sD.endsWith(".0")) {
             int x = sD.indexOf(".");
             sD = sD.substring(0, x);
@@ -512,6 +519,11 @@ public class ButtonFragment extends Fragment {
 
     public void showToastNextDigit() {
         Toast.makeText(getActivity(), R.string.enter_next_number, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public char findSecondChar() {
+        return sInput.charAt(1);
     }
 
     /* Сохранение состояния */
